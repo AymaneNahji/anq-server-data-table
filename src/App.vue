@@ -1,129 +1,106 @@
 <template>
-  <q-form @submit="onSubmit" class="mx-auto container border-2">
-    <q-card class="p-5 flex flex-col gap-5">
-      <AnServerSelect link="https://restcountries.com/v3.1/all?fields=name,cca2,idd,flag" multiple :rules="[val=>!!val || 'hello']" v-model="data.country" :option-label="op=>op.name.common" option-value="cca2" emit-value map-options  />
-      {{data.country}}
-      <q-btn label="Submit" type="submit" color="primary" />
-    </q-card>
-  </q-form>
-
-  <AnServerDataTable has-filter show-page-size-select :page-sizes="[1,3]" title="modelName" :filter-modal-data="{
-    fields:[
-      {
-        label:'title',
-        type:'select',
-        urlParam:'title',
-        choices:[
-          {
-            label:'ddddddd',
-            value:'555'
-          }
-        ]
-      }
-    ]
-  }" has-search :columns="cols"
-      :link="`http://localhost:8000/admin/roles/`" >
-      <template #pagination>
-        hhhhhhhhhhhh
-      </template>
-      <template #body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn icon="more_vert" unelevated round>
-            <q-menu>
-              <q-list>
-                <q-item clickable class="flex justify-center items-center gap-1 text-blue-600" >
-                  <q-icon name="edit" size="1.5rem" />
-                  <span>Update</span>
-                </q-item>
-                <q-item clickable class="flex justify-center items-center gap-1 text-red-600" >
-                  <q-icon name="delete" size="1.5rem" />
-                  <span>Delete</span>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
-        </q-td>
-      </template>
-    </AnServerDataTable>
+  <div class="q-pa-md">
+    <AnqServerDataTable
+      :columns="columns"
+      :api-url="apiUrl"
+      :pagination-response-keys="paginationKeys"
+      :has-search="true"
+      :has-filter="true"
+      :filter-modal-data="filterModalData"
+      title="Users List"
+      link="users"
+      @row-click="onRowClick"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
+import AnqServerDataTable from './components/AnqServerDataTable.vue';
 import { QTableColumn } from 'quasar';
-import  AnServerDataTable, { FilterModalData } from './components/AnServerDataTable.vue';
-import AnServerSelect from './components/AnServerSelect.vue';
-import { reactive } from 'vue';
 
+// Define table columns
+const columns: QTableColumn[] = [
+  {
+    name: 'id',
+    label: 'ID',
+    field: 'id',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'name',
+    label: 'Name',
+    field: 'name',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'email',
+    label: 'Email',
+    field: 'email',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'status',
+    label: 'Status',
+    field: 'status',
+    align: 'left',
+    sortable: true
+  }
+];
 
-const data = reactive({
-  country: []
-})
+// API configuration
+const apiUrl = 'https://api.example.com/users';
 
-
-const onSubmit = () => {
-  console.log(data)
-}
-
-type Product = {
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  origin_price: string;
-  discount_percentage: string;
-  price: number;
-  image: string;
-  avg_rating: number;
-  ratings_count: number;
-  category: number;
-  brand: number | null;
-  has_variants: boolean;
+// Pagination response keys mapping
+const paginationKeys = {
+  results: 'data',
+  count: 'total',
+  lastPage: 'last_page',
+  next: 'next_page_url',
+  previous: 'prev_page_url'
 };
 
-const filterModalData: FilterModalData = {
+// Filter modal configuration
+const filterModalData = {
+  props: {
+    title: 'Filter Users',
+    okLabel: 'Apply Filters',
+    cancelLabel: 'Cancel',
+    formIsLoading: false
+  },
   fields: [
     {
-      label: "Popular domain",
-      type: 'checkboxs',
-      urlParam: 'products_domain',
-      choices: [
-        {
-          label: 'Skinecare',
-          value: "skinecare"
-        },
-        {
-          label: 'Gaming',
-          value: "gaming"
-        },
-      ],
-      defaultValue: 'gaming'
+      type: 'text' as const,
+      label: 'Name',
+      urlParam: 'name'
     },
-  ],
-}
+    {
+      type: 'select' as const,
+      label: 'Status',
+      urlParam: 'status',
+      choices: [
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' }
+      ]
+    },
+    {
+      type: 'date' as const,
+      label: 'Created Date',
+      urlParam: 'created_at'
+    }
+  ]
+};
 
-const cols: QTableColumn[] = [
-  {
-    field: 'id',
-    label: 'ID',
-    name: 'id',
-    align: 'left',
-    sortable: true,
-  },
-
-  {
-    field: 'name',
-    label: 'Name',
-    name: 'name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    field: 'description',
-    label: 'Description',
-    name: 'description',
-    align: 'left',
-    sortable: false,
-  },
-]
+// Row click handler
+const onRowClick = (row: any, index: number) => {
+  console.log('Clicked row:', row, 'at index:', index);
+};
 </script>
 
-<style scoped></style>
+<style>
+.q-pa-md {
+  padding: 16px;
+}
+</style>

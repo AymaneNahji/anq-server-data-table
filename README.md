@@ -1,327 +1,187 @@
-# AN Quasar Utils for simplify your dev life
+# ANQ Server Data Table
 
-`npm i an-quasar-utils` or `yarn add an-quasar-utils`
+A powerful server-side data table component for Vue 3 applications, built with Quasar Framework. This component provides a seamless way to handle server-side pagination, filtering, sorting, and data management in your Vue applications.
 
-And use our helper components:
+## Features
 
-### AnModal
+- Server-side pagination with customizable page sizes
+- Advanced server-side filtering with a modal form
+- Server-side sorting
+- Built-in search functionality
+- Row click events
+- Customizable column definitions
+- Responsive design
+- Built with Vue 3 and Quasar Framework
+- TypeScript support
+- Customizable styling with Tailwind CSS
+- Modal form integration
+- Axios for API requests
 
-a simple modal with global standars (like stop and disable all buttons when loading initial data)
+## Installation
 
+```bash
+npm install anq-server-data-table
 ```
+
+## Usage
+
+```vue
 <template>
-  <q-page class="row items-center justify-evenly">
-
-    <AnModal ref="modalRef" title="Title of modal">
-      <template #content>
-        Hello guys i am the main content of modal !!
-      </template>
-      <template #ok-btn="scope">
-        <!--
-        scope: {
-            click: () => void;
-            color: NamedColor | undefined;
-            label: string;
-        }
-        -->
-        <q-btn outline color="red" @click="scope.click"> Do anything </q-btn>
-      </template>
-      <template #cancel-btn="scope">
-        <!--
-        scope: {
-            color: NamedColor | undefined;
-            disable: boolean;
-            label: string;
-        }
-        -->
-      </template>
-      <template #close-icon-btn="scope">
-        <!--
-        scope: {
-            color: NamedColor | undefined;
-            disable: boolean;
-        }
-        -->
-      </template>
-
-    </AnModal>
-
-    <q-btn label="open modal" color="primary" @click="modalRef?.show()" />
-  </q-page>
+  <anq-server-data-table
+    :columns="columns"
+    :link="apiEndpoint"
+    :link-params="additionalParams"
+    :title="'My Data Table'"
+    :has-search="true"
+    :has-filter="true"
+    :show-page-size-select="true"
+    :enable-row-click="true"
+    :filter-modal-data="filterConfig"
+    @row-click="handleRowClick"
+    @get-data-successfuly="handleDataSuccess"
+    @get-data-error="handleDataError"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import {AnModal} from 'an-quasar-utils'
+import { AnqServerDataTable } from 'anq-server-data-table'
 
-const modalRef = ref<InstanceType<typeof AnModal>>()
+const columns = [
+  { name: 'id', label: 'ID', field: 'id', sortable: true },
+  { name: 'name', label: 'Name', field: 'name', sortable: true },
+  // Add more columns as needed
+]
 
-
-</script>
-
-```
-
-### AnModalForm
-
-is the same of AnModal just with support form behavior like form-is-loading and @submit
-
-```
-<template>
-  <q-page class="row items-center justify-evenly">
-
-    <AnModalForm ref="modalFormRef" @submit="onSubmit" :form-is-loading="data.formIsSubmitting">
-      <template #content>
-        <q-input label="Name" v-model="data.form.name" outlined :rules="[(val:string)=>val.trim() ? true : 'This field is required']" />
-      </template>
-    </AnModalForm>
-
-    <q-btn label="open modal form" color="primary" @click="modalFormRef?.show()" />
-  </q-page>
-</template>
-
-<script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { AnModalForm} from 'an-quasar-utils'
-
-const modalFormRef = ref<InstanceType<typeof AnModalForm>>()
-
-const onSubmit = ()=>{
-  data.formIsSubmitting = true
-  Promise.resolve().then(()=>{
-    console.log('operation work succssfuly.');
-  }).catch(()=>{
-    console.log('there is a problem.');
-  }).finally(()=>{
-    data.formIsSubmitting = true
-  })
+const filterConfig = {
+  fields: [
+    {
+      type: 'text',
+      label: 'Name',
+      urlParam: 'name'
+    },
+    {
+      type: 'select',
+      label: 'Status',
+      urlParam: 'status',
+      choices: [
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' }
+      ]
+    },
+    {
+      type: 'date',
+      label: 'Created Date',
+      urlParam: 'created_at'
+    }
+  ]
 }
 
-const data = reactive({
-  form:{
-    name:''
-  },
-  formIsSubmitting:false,
-})
+const handleRowClick = (row, index) => {
+  console.log('Row clicked:', row, index)
+}
 
+const handleDataSuccess = (data) => {
+  console.log('Data loaded successfully:', data)
+}
+
+const handleDataError = (error) => {
+  console.error('Error loading data:', error)
+}
 </script>
 ```
 
-### AnPhoneNumberInput
+## Props
 
-A reactive international phone number input force the user to add a real phone numbers with full props/slots access to internal components
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| columns | QTableColumn[] | Yes | Array of column definitions |
+| link | String | Yes | API endpoint URL |
+| linkParams | Object | No | Additional URL parameters |
+| title | String | No | Table title |
+| loading | Boolean | No | Loading state of the table |
+| hidePagination | Boolean | No | Hide pagination controls |
+| flat | Boolean | No | Flat style for the table |
+| square | Boolean | No | Square style for the table |
+| hasSearch | Boolean | No | Enable search functionality |
+| hasFilter | Boolean | No | Enable filter functionality |
+| showPageSizeSelect | Boolean | No | Show page size selector |
+| enableRowClick | Boolean | No | Enable row click events |
+| filterModalData | FilterModalData | No | Configuration for filter modal |
+| axiosInterceptor | AxiosInstance | No | Custom Axios instance |
+| paginationResponseKeys | Object | No | Custom pagination response keys |
+| orderingKey | String | No | Custom ordering parameter key |
+| pageSizes | number[] | No | Available page sizes |
 
-```
-<template>
-<AnPhoneNumberInput v-model="data.phone" class="gap-3" outlined :country-props="{outlined:true,dense:true,excludeCountries:['US']}" dense >
-  <template #country-select-prepend>
-    <q-icon name="flag" />
-  </template>
-</AnPhoneNumberInput>
-</template>
+## Filter Modal Field Types
 
-<script>
-import { reactive } from 'vue';
-import { AnPhoneNumberInput } from 'an-quasar-utils'
+The component supports various field types in the filter modal:
 
-const data = reactive({
-  phone:'+21235980022'
-})
+- `text`: Text input
+- `date`: Date picker
+- `time`: Time picker
+- `date-time`: Date and time picker
+- `number`: Number input
+- `boolean-checkbox`: Single checkbox
+- `checkboxs`: Multiple checkboxes
+- `radios`: Radio buttons
+- `select`: Single select dropdown
+- `select-multiple`: Multiple select dropdown
 
-</script>
-```
+## Events
 
-### AnServerSelect
+| Event | Parameters | Description |
+|-------|------------|-------------|
+| rowClick | (row: any, index: number) | Emitted when a row is clicked |
+| getDataSuccessfuly | (data: any) | Emitted when data is successfully loaded |
+| getDataError | (error: any) | Emitted when data loading fails |
+| openFilter | () | Emitted when filter modal is opened |
 
-An QSelect with live search for simplify server data selection
+## Slots
 
-```
-<template>
+The component provides several slots for customization:
 
-<AnServerSelect link="https://restcountries.com/v3.1/all?fields=name,cca2,idd,flag" v-model="data.country" :option-label="op=>op.name.common" option-value="cca2" emit-value map-options  />
-      {{data.countryCode}}
+- `title`: Custom table title
+- `search-input`: Custom search input
+- `filter-btn`: Custom filter button
+- `pagination`: Custom pagination controls
+- `page-size`: Custom page size selector
+- All Quasar QTable slots
+- Filter modal slots (prefixed with `filter-modal-`)
 
-</template>
+## Dependencies
 
-<script>
-import { reactive } from 'vue';
-import { AnServerSelect } from 'an-quasar-utils'
+- Vue 3
+- Quasar Framework
+- Axios
+- TypeScript
+- Tailwind CSS
+- anq-modal-form
 
-const data = reactive({
-  countryCode:null as string | null
-})
+## Development
 
-</script>
-```
+```bash
+# Install dependencies
+npm install
 
-### AnServerDataTable
+# Start development server
+npm run dev
 
-A customizable QTable with live search and intelligent filter modal (using just with a server paginated data)
-
-```
-<template>
-  <div class="mx-auto container border-2 border-black p-1">
-    <AnServerDataTable
-      link="http://localhost:8000/products/client/products/"
-      :columns="cols"
-      :link-params="{
-        page_size:1
-      }"
-      :pagination-response-keys="{
-        count:'count',
-        lastPage:'last_page',
-        next:'next',
-        previous:'previous',
-        results:'results',
-      }"
-
-      title="kkkkk"
-      has-search
-      :filter-modal-data="filterModalData"
-      has-filter
-    >
-
-    </AnServerDataTable>
-
-  </div>
-</template>
-
-<script setup lang="ts">
-import { QTableColumn } from 'quasar';
-import AnServerDataTable, { FilterModalData } from './components/AnServerDataTable.vue';
-
-
-
-type Product = {
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  origin_price: string;
-  discount_percentage: string;
-  price: number;
-  image: string;
-  avg_rating: number;
-  ratings_count: number;
-  category: number;
-  brand: number|null;
-  has_variants: boolean;
-};
-
-const filterModalData : FilterModalData = {
-        fields:[
-          {
-            label:"Popular domain",
-            type:'checkboxs',
-            urlParam:'products_domain',
-            choices:[
-              {
-                label:'Skinecare',
-                value:"skinecare"
-              },
-              {
-                label:'Gaming',
-                value:"gaming"
-              },
-            ],
-            defaultValue:'gaming'
-          },
-        ],
-      }
-
-const cols: QTableColumn<Product>[] = [
-  {
-    field: 'id',
-    label: 'ID',
-    name: 'id',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    field: 'slug',
-    label: 'Slug',
-    name: 'slug',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    field: 'name',
-    label: 'Name',
-    name: 'name',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    field: 'description',
-    label: 'Description',
-    name: 'description',
-    align: 'left',
-    sortable: false,
-  },
-  {
-    field: 'origin_price',
-    label: 'Original Price',
-    name: 'origin_price',
-    align: 'right',
-    sortable: true,
-  },
-  {
-    field: 'discount_percentage',
-    label: 'Discount %',
-    name: 'discount_percentage',
-    align: 'right',
-    sortable: true,
-  },
-  {
-    field: 'price',
-    label: 'Price',
-    name: 'price',
-    align: 'right',
-    sortable: true,
-  },
-  {
-    field: 'image',
-    label: 'Image',
-    name: 'image',
-    align: 'left',
-    sortable: false,
-  },
-  {
-    field: 'avg_rating',
-    label: 'Avg Rating',
-    name: 'avg_rating',
-    align: 'right',
-    sortable: true,
-  },
-  {
-    field: 'ratings_count',
-    label: 'Ratings Count',
-    name: 'ratings_count',
-    align: 'right',
-    sortable: true,
-  },
-  {
-    field: 'category',
-    label: 'Category',
-    name: 'category',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    field: 'brand',
-    label: 'Brand',
-    name: 'brand',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    field: 'has_variants',
-    label: 'Has Variants',
-    name: 'has_variants',
-    align: 'center',
-    sortable: false,
-  }
-]
-</script>
+# Build for production
+npm run build
 ```
 
-# Big Note : use TypeScript for descover our utils because there is a lot of props/slots/exposes we can't document them
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Author
+
+- Aymane Nahji
+
+## Repository
+
+[GitHub Repository](https://github.com/AymaneNahji/anq-server-data-table)

@@ -1,35 +1,35 @@
 {
-  "name": "an-quasar-utils",
+  "name": "anq-server-data-table",
   "version": "0.0.17",
   "type": "module",
-  "main": "./dist/an-utils.umd.cjs",
+  "main": "./dist/anq-server-data-table.umd.cjs",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
-  "module": "./dist/an-utils.js",
+  "module": "./dist/anq-server-data-table.js",
   "exports": {
     ".": {
-      "import": "./dist/an-utils.js",
-      "require": "./dist/an-utils.umd.cjs",
+      "import": "./dist/anq-server-data-table.js",
+      "require": "./dist/anq-server-data-table.umd.cjs",
       "types": "./dist/types/index.d.ts"
     }
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && yarn build:types",
+    "build": "vite build && npm run build:types",
     "build:types": "vue-tsc --project tsconfig.build-types.json --declaration --emitDeclarationOnly --outDir dist/types ",
     "preview": "vite preview"
   },
   "dependencies": {
+    "anq-modal-form": "^0.0.17",
     "axios": "^1.7.7",
-    "countries-list": "^3.1.1",
-    "libphonenumber-js": "^1.11.16",
     "vue": "^3.4.37"
   },
   "devDependencies": {
     "@quasar/extras": "^1.16.12",
     "@quasar/vite-plugin": "^1.7.0",
+    "@types/node": "^22.15.3",
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
@@ -40,11 +40,10 @@
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
     "vite-plugin-css-injected-by-js": "^3.5.1",
-    "vue-tsc": "^2.0.29",
-    "@rollup/rollup-win32-x64-msvc": "^4.28.1"
+    "vue-tsc": "^2.0.29"
   },
   "keywords": [
-    "an-quasar-utils",
+    "anq-server-data-table",
     "modal",
     "form-modal",
     "table",
@@ -97,6 +96,6 @@
   "author": "aymane_nahji",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AymaneNahji/an-quasar-utils"
+    "url": "https://github.com/AymaneNahji/anq-server-data-table"
   }
 }

@@ -55,14 +55,14 @@
                     </slot>
                 </div>
             </template>
-            <template v-for="(_, name, index) in slots" #[name]="slotData" :key="index">
+            <template v-for="(_, name) in slots" #[name]="slotData" :key="name">
                 <slot v-if="!name.toString().startsWith('filter-modal-')" :name="(name as any)"
                     v-bind="(slotData as any)">
                 </slot>
             </template>
         </q-table>
     </div>
-    <AnModalForm ref="filterModal" v-bind="props.filterModalData.props"
+    <AnqModalForm ref="filterModal" v-bind="props.filterModalData.props"
         :ok-label="props.filterModalData.props?.okLabel || 'Filter'"
         :title="props.filterModalData.props?.title || 'Filter'" @submit="onFilter"
         :form-is-loading="data.filterIsLoading">
@@ -177,13 +177,12 @@
                 </template>
             </template>
         </template>
-        <template v-for="(_, name, index) in slots" #[removeFilterModalSlotsPrefix(name.toString())]="slotData"
-            :key="index">
+        <template v-for="(_, name) in slots" #[removeFilterModalSlotsPrefix(name.toString())]="slotData" :key="name">
             <slot v-if="name.toString().startsWith('filter-modal-')" :name="name" v-bind="(slotData as any)"></slot>
         </template>
 
 
-    </AnModalForm>
+    </AnqModalForm>
 </template>
 
 <script setup lang="ts">
@@ -191,7 +190,7 @@
 
 import { QTableColumn, QTableSlots } from 'quasar';
 import { onBeforeMount, reactive, ref } from 'vue';
-import AnModalForm from './AnModalForm.vue';
+import { AnqModalForm } from 'anq-modal-form';
 import axios, { AxiosInstance } from 'axios';
 
 type Paginated<T = any> = {
@@ -206,7 +205,7 @@ type Filter = {
     [key: string]: any
 }
 type Pagination = { page?: number, page_size?: number }
-type FilterModalSlots = InstanceType<typeof AnModalForm>['$slots']
+type FilterModalSlots = InstanceType<typeof AnqModalForm>['$slots']
 
 export type AnServerDataTableSlots = Omit<QTableSlots,'pagination'> & {
     [K in keyof FilterModalSlots as K extends "content" ? string : `filter-modal-${K}`]: FilterModalSlots[K]
@@ -252,10 +251,10 @@ export type FilterModalData = {
             value: string | number | any;
         }[];
     }[];
-    props?: InstanceType<typeof AnModalForm>['$props']
+    props?: InstanceType<typeof AnqModalForm>['$props']
 }
 
-const filterModal = ref<InstanceType<typeof AnModalForm>>();
+const filterModal = ref<InstanceType<typeof AnqModalForm>>();
 
 const emit = defineEmits<{
     (event: 'openFilter'): void;
