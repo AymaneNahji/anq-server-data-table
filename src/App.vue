@@ -2,7 +2,6 @@
   <div class="q-pa-md">
     <AnqServerDataTable
       :columns="columns"
-      :api-url="apiUrl"
       :pagination-response-keys="paginationKeys"
       :has-search="true"
       :has-filter="true"

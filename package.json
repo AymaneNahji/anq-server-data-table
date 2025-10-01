@@ -1,6 +1,6 @@
 {
   "name": "anq-server-data-table",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "type": "module",
   "main": "./dist/anq-server-data-table.umd.cjs",
   "types": "./dist/types/index.d.ts",

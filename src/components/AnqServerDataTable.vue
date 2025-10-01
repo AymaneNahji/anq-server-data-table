@@ -1,11 +1,16 @@
 <template>
     <div class="flex flex-col flex-nowrap gap-2 w-full">
 
-        <q-table :loading="props.loading || data.tableIsLoading" :hide-bottom="props.hidePagination" :flat="props.flat"
-            :square="props.square" :title="props.title" :columns="props.columns"
+        <q-table
+            v-bind="props"
+            :on-row-click="props.enableRowClick ? (_evt, row, index) => { emit('rowClick', row, index) } : undefined"
+            :loading="props.loading || data.tableIsLoading" 
+            :hide-bottom="props.hidePagination" 
             :rows="(data.rows[props.paginationResponseKeys.results] as unknown as any[])"
-            v-model:pagination="data.pagination" @request="onRequest" wrap-cells class="w-full"
-            v-bind="{ onRowClick: props.enableRowClick ? (_evt, row, index) => { emit('rowClick', row, index) } : undefined, }">
+            v-model:pagination="data.pagination" 
+            @request="onRequest" 
+            class="w-full"
+            >
             <template #top>
                 <div class="q-table__top relative-position row items-center w-full">
                     <div class="flex w-full items-center gap-2 justify-between">
@@ -188,7 +193,7 @@
 <script setup lang="ts">
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { QTableColumn, QTableSlots } from 'quasar';
+import { QTableProps, QTableSlots } from 'quasar';
 import { onBeforeMount, reactive, ref } from 'vue';
 import { AnqModalForm } from 'anq-modal-form';
 import axios, { AxiosInstance } from 'axios';
@@ -263,89 +268,44 @@ const emit = defineEmits<{
     (event: 'getDataError', error: any): void;
 }>()
 
-const props = defineProps({
-    columns: {
-        type: Object as () => QTableColumn[],
-        required: true,
-    },
-    link: {
-        type: String,
-        required: true,
-    },
-    linkParams: {
-        type: Object as () => {
-            [key: string]: string | number
-        },
-        default: {}
-    },
-    title: {
-        type: String,
-        default: ''
-    },
-    loading: {
-        type: Boolean,
-        default: false
-    },
-    hidePagination: {
-        type: Boolean,
-        default: false
-    },
-    flat: {
-        type: Boolean,
-        default: false
-    },
-    square: {
-        type: Boolean,
-        default: false
-    },
-    hasSearch: {
-        type: Boolean,
-        default: false
-    },
-    hasFilter: {
-        type: Boolean,
-        default: false
-    },
-    showPageSizeSelect: {
-        type: Boolean,
-        default: false
-    },
-    enableRowClick: {
-        type: Boolean,
-        default: false
-    },
-    filterModalData: {
-        type: Object as () => FilterModalData,
-        default: {
-            fields: []
-        } as FilterModalData,
-    },
-    axiosInterceptor: {
-        type: Object as () => AxiosInstance,
-        required: false
-    },
-    paginationResponseKeys: {
-        type: Object as () => { [K in keyof Paginated]: string },
-        default: {
-            count: "count",
-            lastPage: "lastPage",
-            next: "next",
-            previous: "previous",
-            results: "results",
-        } as { [K in keyof Paginated]: string }
-    },
-    orderingKey: {
-        type: String,
-        default: "ordering",
-    },
-    pageSizes: {
-        type: Object as () => number[],
-        default: [5, 10, 25, 50]
-    },
-    searchUrlParam: {
-        type: String,
-        default: 'search'
-    }
+export interface AnqServerDataTableProps extends Omit<QTableProps, 'rows'> {
+    link: string;
+    linkParams?: {
+        [key: string]: string | number
+    };
+    hidePagination?: boolean;
+    hasSearch?: boolean;
+    hasFilter?: boolean;
+    showPageSizeSelect?: boolean;
+    enableRowClick?: boolean;
+    filterModalData?: FilterModalData;
+    axiosInterceptor?: AxiosInstance;
+    paginationResponseKeys?: { [K in keyof Paginated]: string };
+    orderingKey?: string;
+    pageSizes?: number[];
+    searchUrlParam?: string;
+}
+
+const props = withDefaults(defineProps<AnqServerDataTableProps>(), {
+    linkParams: () => ({}),
+    hidePagination: false,
+    hasSearch: false,
+    hasFilter: false,
+    showPageSizeSelect: false,
+    enableRowClick: false,
+    filterModalData: () => ({
+        fields: []
+    } as FilterModalData),
+    paginationResponseKeys: () => ({
+        count: "count",
+        lastPage: "lastPage",
+        next: "next",
+        previous: "previous",
+        results: "results",
+    }),
+    orderingKey: "ordering",
+    pageSizes: () => [5, 10, 25, 50],
+    searchUrlParam: 'search'
 })
 
 const slots = defineSlots<AnServerDataTableSlots>()
