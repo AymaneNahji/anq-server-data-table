@@ -2,7 +2,8 @@
     <div class="flex flex-col flex-nowrap gap-2 w-full">
 
         <q-table
-            v-bind="{...props, onRowClick: props.enableRowClick ? (_evt, row, index) => { emit('rowClick', row, index) } : undefined, }"
+            v-bind="props"
+            :on-row-click="props.enableRowClick ? (_evt, row, index) => { emit('rowClick', row, index) } : undefined"
             :loading="props.loading || data.tableIsLoading" 
             :hide-bottom="props.hidePagination" 
             :rows="(data.rows[props.paginationResponseKeys.results] as unknown as any[])"
@@ -267,7 +268,7 @@ const emit = defineEmits<{
     (event: 'getDataError', error: any): void;
 }>()
 
-export interface AnqServerDataTableProps extends Omit<QTableProps, 'rows'> {
+export interface AnqServerDataTableProps extends Omit<QTableProps, 'rows' | 'onRowClick'> {
     link: string;
     linkParams?: {
         [key: string]: string | number
