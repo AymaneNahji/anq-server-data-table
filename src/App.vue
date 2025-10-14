@@ -1,15 +1,26 @@
 <template>
+  <div @click="$q.dark.toggle()">
+    {{ $q.dark.isActive? 'Dark' : 'Light' }}
+  </div>
   <div class="q-pa-md">
     <AnqServerDataTable
+      :pagination-response-keys="{
+        count: 'count',
+        next: 'next',
+        previous: 'previous',
+        results: 'results',
+        lastPage: 'last_page',
+      }"
       :columns="columns"
-      :pagination-response-keys="paginationKeys"
       :has-search="true"
       :has-filter="true"
       :filter-modal-data="filterModalData"
       title="Users List"
-      link="users"
+      enableRowClick
       @row-click="onRowClick"
-    />
+      link="http://localhost:8000/api/v1/events/admin-event-feedbacks/"
+    >
+  </AnqServerDataTable>
   </div>
 </template>
 
@@ -26,27 +37,27 @@ const columns: QTableColumn[] = [
     align: 'left',
     sortable: true
   },
-  {
-    name: 'name',
-    label: 'Name',
-    field: 'name',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'email',
-    label: 'Email',
-    field: 'email',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'status',
-    label: 'Status',
-    field: 'status',
-    align: 'left',
-    sortable: true
-  }
+  // {
+  //   name: 'name',
+  //   label: 'Name',
+  //   field: 'name',
+  //   align: 'left',
+  //   sortable: true
+  // },
+  // {
+  //   name: 'email',
+  //   label: 'Email',
+  //   field: 'email',
+  //   align: 'left',
+  //   sortable: true
+  // },
+  // {
+  //   name: 'status',
+  //   label: 'Status',
+  //   field: 'status',
+  //   align: 'left',
+  //   sortable: true
+  // }
 ];
 
 // API configuration
